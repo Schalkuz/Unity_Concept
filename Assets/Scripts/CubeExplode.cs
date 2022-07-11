@@ -1,30 +1,34 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CubeExplode : MonoBehaviour
 {
-    [SerializeField]
-    private int cubesPerAxis = 8;
-    [SerializeField]
-    private float delay = 1f;
-    [SerializeField]
-    private float force = 300f;
-    [SerializeField]
-    private float radius = 2f;
+    [SerializeField] private int cubesPerAxis = 8;
+    [SerializeField] private float delay = 0f;
+    [SerializeField] private float force = 300f;
+    [SerializeField] private float radius = 2f;
+    [SerializeField] private String keyToBePressed = "space";
+    [SerializeField] private float childCubeDelay = 5f;
 
-    private void Start()
+    private void Update()
     {
-        Invoke("Main", delay);
+        if (Input.GetKeyDown(keyToBePressed))
+        {
+            Debug.Log($"{keyToBePressed} key was pressed");
+            
+            Invoke("SplitIntoCubes", delay);
+        }
     }
 
-    void Main()
+    void SplitIntoCubes()
     {
-        for(int x = 0; x < cubesPerAxis; x++)
+        for (var x = 0; x < cubesPerAxis; x++)
         {
-            for(int y = 0; y < cubesPerAxis; y++)
+            for (var y = 0; y < cubesPerAxis; y++)
             {
-                for (int z = 0; z < cubesPerAxis; z++)
+                for (var z = 0; z < cubesPerAxis; z++)
                 {
                     CreateCube(new Vector3(x, y, z));
                 }
@@ -32,7 +36,6 @@ public class CubeExplode : MonoBehaviour
         }
 
         Destroy(gameObject);
-
     }
 
     void CreateCube(Vector2 coordinates)
@@ -57,5 +60,8 @@ public class CubeExplode : MonoBehaviour
         // Now for the explosion
         var cubeRb = cube.AddComponent<Rigidbody>();
         cubeRb.AddExplosionForce(force, transform.position, radius);
+
+        // Destroy the created cubes after a delay
+        Destroy(cube, childCubeDelay);
     }
 }
